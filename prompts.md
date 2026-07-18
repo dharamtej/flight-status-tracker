@@ -77,3 +77,17 @@ apply the merge rules from spec.md.
 **Purpose**
 
 Used to generate FlightStatus.Api/Interfaces/IFlightStatusService.cs and FlightStatus.Api/Services/FlightStatusService.cs: queries all injected IFlightStatusProvider instances in parallel via Task.WhenAll and applies spec.md's three merge rules (both respond → later LastUpdatedUtc wins with AeroTrack tie-break; one responds → use it; neither responds → synthetic Unknown with message). Note: FlightStatusResult's ScheduledDeparture/ScheduledArrival are non-nullable per spec.md, so I used DateTime.MinValue as a sentinel for the neither-responds case rather than changing the contract — callers should key off Message being non-null to detect that case, not the schedule fields.
+
+# 7. Minimal API Wiring
+
+**Prompt**
+
+Wire this up as a .NET 8 Minimal API in Program.cs — not Controllers — with the
+/flights/status endpoint per spec.md, DI-registered providers and services, and 400s for
+missing/invalid query params.
+
+---
+
+**Purpose**
+
+Used to generate FlightStatus.Api/Endpoints/FlightStatusEndpoints.cs (a MapGet extension method validating flightNumber/date presence and yyyy-MM-dd format, returning Results.Problem for 400s) and wire DI registration for both IFlightStatusProvider implementations and IFlightStatusService into Program.cs, then ran the API and curled every merge scenario plus all three 400 cases to confirm end-to-end behavior. Note: verified UnifiedFlightStatus serializes as a numeric enum by default rather than a string, and flagged it to the user as an open decision (add JsonStringEnumConverter now vs. handle it on the frontend) rather than deciding unilaterally.
