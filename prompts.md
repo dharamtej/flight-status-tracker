@@ -104,3 +104,17 @@ of a stack trace.
 **Purpose**
 
 Used to add app.UseExceptionHandler(...) in Program.cs, writing a consistent application/problem+json 500 body via IProblemDetailsService instead of a stack trace or dev exception page, then verified it live by temporarily throwing from the endpoint for a sentinel flight number and reverting afterward. Note: ProblemDetails for this purpose actually resolves from Microsoft.AspNetCore.Mvc rather than Microsoft.AspNetCore.Http as first assumed, despite IProblemDetailsService/ProblemDetailsContext living in Http — corrected via a using alias after a build error surfaced the right namespace.
+
+# 9. xUnit Test Suite Generation
+
+**Prompt**
+
+Generate xUnit tests covering the normalization table, the merge scenarios (both respond,
+one responds, neither responds, a provider throws), and the endpoint's validation (missing
+params, malformed date).
+
+---
+
+**Purpose**
+
+Used to generate the FlightStatus.Tests suite: AeroTrackProviderTests and QuickFlightProviderTests covering every vocabulary-table row and the 15-minute boundary, FlightStatusServiceTests covering all three merge rules plus the provider-throws case via a hand-rolled FakeFlightStatusProvider, and FlightStatusRequestValidatorTests covering missing/blank params and malformed dates; all 56 tests pass. Note: made Normalize/ComputeFromSchedule internal (with InternalsVisibleTo) and extracted endpoint validation into FlightStatusRequestValidator to make these testable without a WebApplicationFactory dependency, and changed FlightStatusService to catch a throwing provider and treat it as "no response" (merge rules 2/3) rather than letting the exception propagate to a 500 — this wasn't specified in spec.md, so I flagged it to the user as a behavior decision rather than silently encoding it as passing tests.
