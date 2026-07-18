@@ -39,3 +39,16 @@ Generate the models and IFlightStatusProvider interface based on spec.md.
 **Purpose**
 
 Used to scaffold FlightStatus.Api/Models (UnifiedFlightStatus, ProviderFlightStatus, FlightStatusResult, AeroTrackResponse, QuickFlightResponse) and FlightStatus.Api/Interfaces/IFlightStatusProvider directly from the field lists and contracts already committed to spec.md.
+
+# 4. Provider Stub Generation
+
+**Prompt**
+
+Generate two deterministic provider stubs, AeroTrackProvider and QuickFlightProvider,
+implementing IFlightStatusProvider per spec.md — cover every scenario in the table.
+
+---
+
+**Purpose**
+
+Used to generate FlightStatus.Api/Providers/AeroTrackProvider.cs and QuickFlightProvider.cs: fixed in-memory fixture dictionaries keyed by (flightNumber, date) implementing each provider's status-vocabulary normalization and AeroTrack's reference-time-selection delay calculation, with fixture coverage mapped to all 15 rows of spec.md's Deterministic Test Scenarios table.
