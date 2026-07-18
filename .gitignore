@@ -1,0 +1,22 @@
+# .NET
+bin/
+obj/
+*.user
+.vs/
+
+# Node / Vite
+node_modules/
+dist/
+.vite/
+
+# Editor
+.vscode/
+*.suo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env
+.env
+.env.local
