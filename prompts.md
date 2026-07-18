@@ -52,3 +52,28 @@ implementing IFlightStatusProvider per spec.md — cover every scenario in the t
 **Purpose**
 
 Used to generate FlightStatus.Api/Providers/AeroTrackProvider.cs and QuickFlightProvider.cs: fixed in-memory fixture dictionaries keyed by (flightNumber, date) implementing each provider's status-vocabulary normalization and AeroTrack's reference-time-selection delay calculation, with fixture coverage mapped to all 15 rows of spec.md's Deterministic Test Scenarios table.
+
+# 5. Status Normalization Check
+
+**Prompt**
+
+Add status normalization per the mapping table in spec.md.
+
+---
+
+**Purpose**
+
+Requested to add status normalization; verified it was already implemented in AeroTrackProvider.Normalize and QuickFlightProvider.Normalize as part of the prior provider-stub generation, and confirmed both match spec.md's vocabulary tables verbatim. Note: no new code was added — the request was satisfied by pointing to the existing implementation rather than duplicating it.
+
+# 6. FlightStatusService Generation
+
+**Prompt**
+
+Generate FlightStatusService — query providers in parallel, normalize each result, then
+apply the merge rules from spec.md.
+
+---
+
+**Purpose**
+
+Used to generate FlightStatus.Api/Interfaces/IFlightStatusService.cs and FlightStatus.Api/Services/FlightStatusService.cs: queries all injected IFlightStatusProvider instances in parallel via Task.WhenAll and applies spec.md's three merge rules (both respond → later LastUpdatedUtc wins with AeroTrack tie-break; one responds → use it; neither responds → synthetic Unknown with message). Note: FlightStatusResult's ScheduledDeparture/ScheduledArrival are non-nullable per spec.md, so I used DateTime.MinValue as a sentinel for the neither-responds case rather than changing the contract — callers should key off Message being non-null to detect that case, not the schedule fields.
