@@ -5,9 +5,9 @@ export interface FlightStatusResult {
   date: string
   status: UnifiedFlightStatus
   source: 'AeroTrack' | 'QuickFlight' | 'None'
-  scheduledDeparture: string
+  scheduledDeparture: string | null
   actualDeparture: string | null
-  scheduledArrival: string
+  scheduledArrival: string | null
   actualArrival: string | null
   terminal: string | null
   gate: string | null

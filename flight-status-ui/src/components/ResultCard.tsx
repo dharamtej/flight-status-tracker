@@ -80,9 +80,9 @@ function Chip({
 }
 
 export function ResultCard({ result }: ResultCardProps) {
-  // Per spec.md, Message is populated only for the Unknown/neither-responds case, which is
-  // also the only case with no real schedule data (ScheduledDeparture/Arrival are sentinels).
-  const hasScheduleData = result.message === null
+  // Per spec.md, ScheduledDeparture/ScheduledArrival are null only in the neither-responds
+  // (Unknown) case — there's no real schedule data to show then.
+  const { scheduledDeparture, scheduledArrival } = result
   const hasAeroTrackDetails = Boolean(result.terminal || result.gate || result.delayReason)
   const isDelayed = result.status === 'Delayed'
 
@@ -105,14 +105,14 @@ export function ResultCard({ result }: ResultCardProps) {
           </p>
         )}
 
-        {hasScheduleData && (
+        {scheduledDeparture && scheduledArrival && (
           <>
-            <p className="mt-4 text-sm text-slate-500">{formatDate(result.scheduledDeparture)}</p>
+            <p className="mt-4 text-sm text-slate-500">{formatDate(scheduledDeparture)}</p>
 
             <div className="mt-2 flex items-center gap-3">
               <TimeLeg
                 label="Departure"
-                scheduled={result.scheduledDeparture}
+                scheduled={scheduledDeparture}
                 actual={result.actualDeparture}
                 isDelayed={isDelayed}
                 align="left"
@@ -126,7 +126,7 @@ export function ResultCard({ result }: ResultCardProps) {
 
               <TimeLeg
                 label="Arrival"
-                scheduled={result.scheduledArrival}
+                scheduled={scheduledArrival}
                 actual={result.actualArrival}
                 isDelayed={isDelayed}
                 align="right"
@@ -145,7 +145,7 @@ export function ResultCard({ result }: ResultCardProps) {
           </div>
         )}
 
-        {hasScheduleData && (
+        {scheduledDeparture && scheduledArrival && (
           <p className="mt-4 border-t border-slate-100 pt-3 text-xs text-slate-400">
             Source: {result.source}
             {result.lastUpdatedUtc &&

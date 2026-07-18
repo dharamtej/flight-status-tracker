@@ -110,6 +110,8 @@ public class FlightStatusServiceTests
         Assert.Equal(UnifiedFlightStatus.Unknown, result.Status);
         Assert.Equal("None", result.Source);
         Assert.Null(result.LastUpdatedUtc);
+        Assert.Null(result.ScheduledDeparture);
+        Assert.Null(result.ScheduledArrival);
         Assert.Equal("No status available from either provider for flight SR800 on 2026-01-15.", result.Message);
     }
 

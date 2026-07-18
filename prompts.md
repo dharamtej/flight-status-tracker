@@ -131,3 +131,16 @@ status card, conditional AeroTrack-only fields, and a clear error state.
 **Purpose**
 
 Used to build flight-status-ui per spec.md's Frontend Design & Structure section: Tailwind CSS v4 wired via @tailwindcss/vite, services/flightStatusApi.ts, hooks/useFlightStatus.ts, and components/ (SearchForm, ResultCard, ErrorState, StatusBadge), then verified live by driving a real headless Chrome instance via CDP against both running dev servers — confirmed all five status colors, conditional AeroTrack fields, no scrollbar at 1280×900, no horizontal overflow at 375px, and the error state after killing the API mid-session. Note: this also required resolving the previously-flagged UnifiedFlightStatus serialization decision (added JsonStringEnumConverter in Program.cs so status serializes as a name, not an ordinal) since StatusBadge's color map needed to key off status names — updated spec.md's note to mark that decision resolved rather than leaving it stale.
+
+# 11. README Authoring
+
+**Prompt**
+
+Write README.md — what it does, architecture, tech stack, setup/run steps for backend and
+frontend from a clean clone, the API contract, key assumptions, how to run tests.
+
+---
+
+**Purpose**
+
+Used to produce README.md: project summary, backend/frontend architecture overview cross-linked to spec.md, tech stack table, clean-clone setup/run steps for both apps, a table of known-good fixture flight numbers for manual testing, the API contract with a live example, a condensed summary of spec.md's key assumptions, and test-running instructions (dotnet test, a single-test filter example, and the frontend build/lint commands). Note: every command in the README (dotnet restore, dotnet run --project FlightStatus.Api --urls http://localhost:5299, npm install/npm run dev, the proxy, dotnet test --filter) was actually re-run from a cold-started state to confirm it works as written, not just transcribed from memory — the backend/frontend port-mismatch gotcha from earlier in this session is called out explicitly so it isn't rediscovered by a fresh clone.

@@ -189,9 +189,9 @@ public sealed record FlightStatusResult(
     DateOnly Date,
     UnifiedFlightStatus Status,
     string Source,              // "AeroTrack" | "QuickFlight" | "None"
-    DateTime ScheduledDeparture,
+    DateTime? ScheduledDeparture, // null only in the neither-responds case
     DateTime? ActualDeparture,
-    DateTime ScheduledArrival,
+    DateTime? ScheduledArrival,   // null only in the neither-responds case
     DateTime? ActualArrival,
     string? Terminal,           // present only when Source == "AeroTrack" and provided
     string? Gate,                // present only when Source == "AeroTrack" and provided
@@ -202,7 +202,10 @@ public sealed record FlightStatusResult(
 ```
 
 Always returns `200 OK` for a syntactically valid request, even when the resulting status is
-`Unknown` — `Unknown` is a legitimate result, not an error.
+`Unknown` — `Unknown` is a legitimate result, not an error. In the neither-responds case, there is
+no real schedule data to report, so `ScheduledDeparture`/`ScheduledArrival` are `null` rather than
+a sentinel value — clients should treat a non-null `Message` (or null `ScheduledDeparture`) as the
+signal that no schedule data is available, not attempt to interpret the timestamp fields.
 
 ---
 
