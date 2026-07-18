@@ -27,3 +27,15 @@ every status plus single-provider-only and no-provider cases.
 **Purpose**
 
 Used to produce spec.md: the unified status enum and reference-time-selection rule, AeroTrack/QuickFlight raw contracts and status vocabularies, the merge rules with tie-break, the GET /flights/status API contract, and a 15-row deterministic scenario table for later test fixtures. Note: the brief left several rules ambiguous (provider vocabularies, departure-vs-arrival precedence, tie-break on equal lastUpdatedUtc, null-vs-Unknown distinction); I resolved these myself and recorded each decision in spec.md's Assumptions & Design Decisions section rather than leaving them implicit.
+
+# 3. Models and IFlightStatusProvider Generation
+
+**Prompt**
+
+Generate the models and IFlightStatusProvider interface based on spec.md.
+
+---
+
+**Purpose**
+
+Used to scaffold FlightStatus.Api/Models (UnifiedFlightStatus, ProviderFlightStatus, FlightStatusResult, AeroTrackResponse, QuickFlightResponse) and FlightStatus.Api/Interfaces/IFlightStatusProvider directly from the field lists and contracts already committed to spec.md.
