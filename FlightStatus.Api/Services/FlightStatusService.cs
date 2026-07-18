@@ -18,7 +18,7 @@ public sealed class FlightStatusService : IFlightStatusService
     public async Task<FlightStatusResult> GetStatusAsync(string flightNumber, DateOnly date, CancellationToken cancellationToken)
     {
         var responseTasks = _providers
-            .Select(provider => provider.GetStatusAsync(flightNumber, date, cancellationToken))
+            .Select(provider => QuerySafelyAsync(provider, flightNumber, date, cancellationToken))
             .ToArray();
 
         var rawResponses = await Task.WhenAll(responseTasks);
@@ -75,5 +75,21 @@ public sealed class FlightStatusService : IFlightStatusService
             .OrderByDescending(response => response.LastUpdatedUtc)
             .ThenBy(response => response.ProviderName == "AeroTrack" ? 0 : 1)
             .First();
+    }
+
+    // A provider throwing (e.g. a real HTTP call timing out) is treated the same as "did not
+    // respond" per merge rules 2/3, so one provider's failure doesn't fail the whole request
+    // when the other provider still has data.
+    private static async Task<ProviderFlightStatus?> QuerySafelyAsync(
+        IFlightStatusProvider provider, string flightNumber, DateOnly date, CancellationToken cancellationToken)
+    {
+        try
+        {
+            return await provider.GetStatusAsync(flightNumber, date, cancellationToken);
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            return null;
+        }
     }
 }

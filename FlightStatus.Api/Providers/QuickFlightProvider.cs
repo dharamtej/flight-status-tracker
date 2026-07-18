@@ -76,7 +76,7 @@ public sealed class QuickFlightProvider : IFlightStatusProvider
         return Task.FromResult<ProviderFlightStatus?>(Normalize(raw));
     }
 
-    private ProviderFlightStatus Normalize(QuickFlightResponse raw)
+    internal ProviderFlightStatus Normalize(QuickFlightResponse raw)
     {
         var status = raw.FlightState switch
         {

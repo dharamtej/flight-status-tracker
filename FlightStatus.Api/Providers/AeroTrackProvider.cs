@@ -108,7 +108,7 @@ public sealed class AeroTrackProvider : IFlightStatusProvider
         return Task.FromResult<ProviderFlightStatus?>(Normalize(raw));
     }
 
-    private ProviderFlightStatus Normalize(AeroTrackResponse raw)
+    internal ProviderFlightStatus Normalize(AeroTrackResponse raw)
     {
         var status = raw.Status switch
         {
@@ -132,7 +132,7 @@ public sealed class AeroTrackProvider : IFlightStatusProvider
             raw.LastUpdatedUtc);
     }
 
-    private static UnifiedFlightStatus ComputeFromSchedule(AeroTrackResponse raw)
+    internal static UnifiedFlightStatus ComputeFromSchedule(AeroTrackResponse raw)
     {
         TimeSpan delta;
 
