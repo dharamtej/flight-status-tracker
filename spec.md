@@ -231,6 +231,90 @@ respective stub provider — no randomness, no clock dependency.
 
 ---
 
+## Frontend Design & Structure
+
+The frontend (`flight-status-ui/`, React + TypeScript) is a single page: a search form and a
+result area, nothing else. No routing.
+
+### Styling
+
+Tailwind CSS. Utility classes only — no separate CSS files beyond Tailwind's own entry point and
+the minimal global reset already in `src/index.css`.
+
+### Layout constraint
+
+- **Desktop** (`>= 1280px` viewport width): the entire page — search form plus result/error
+  state — must fit within the viewport height with no vertical scrollbar. Design for content
+  that fits, not content that scrolls.
+- **Mobile** (down to `320px` viewport width): the layout must reflow responsively (stacked
+  form fields, single-column result card) with **no horizontal overflow** — no fixed pixel
+  widths wider than the viewport, relative units and flex/grid only.
+- Vertical scrolling on small viewports is acceptable if content genuinely doesn't fit; horizontal
+  scrolling is never acceptable at any viewport width.
+
+### Status color coding
+
+Directly from the [Unified Status Model](#unified-status-model) table above:
+
+| Status | Color | Example Tailwind classes |
+|---|---|---|
+| `OnTime` | Green | `bg-green-100 text-green-800` |
+| `Delayed` | Amber | `bg-amber-100 text-amber-800` |
+| `Cancelled` | Red | `bg-red-100 text-red-800` |
+| `Diverted` | Red | `bg-red-100 text-red-800` |
+| `Unknown` | Grey | `bg-gray-100 text-gray-800` |
+
+`Cancelled` and `Diverted` share the same red treatment — both are "flight not happening as
+planned" from the agent's point of view — but remain distinct enum values/labels in the UI text.
+
+> **Note:** this table keys off the status *name* (e.g. `"OnTime"`), not its numeric ordinal.
+> The backend registers a `JsonStringEnumConverter` (see `Program.cs`) so `UnifiedFlightStatus`
+> serializes as its name rather than a numeric ordinal — resolving the open question noted in
+> prompts.md entry 7.
+
+### Conditional rendering — AeroTrack-only fields
+
+`terminal`, `gate`, and `delayReason` on `FlightStatusResult` are rendered only when present
+(non-null/non-empty) in the API response. Components must key off **field presence**, not
+`source === "AeroTrack"` — this keeps `ResultCard` decoupled from provider naming and still
+behaves correctly if a future provider also supplies one of these fields.
+
+### File structure
+
+```
+flight-status-ui/src/
+├── components/
+│   ├── SearchForm.tsx     — flight number + date inputs, submit; disabled while loading
+│   ├── ResultCard.tsx     — renders a successful FlightStatusResult; composes StatusBadge
+│   │                        and the conditional AeroTrack-only fields
+│   ├── ErrorState.tsx     — renders when the API call fails (400, 500, or network error)
+│   └── StatusBadge.tsx    — color-coded pill for a single UnifiedFlightStatus value
+├── hooks/
+│   └── useFlightStatus.ts — encapsulates the API call plus loading/data/error state
+└── services/
+    └── flightStatusApi.ts — fetch logic for GET /flights/status; translates a
+                              non-2xx ProblemDetails response into a thrown error
+                              useFlightStatus can catch
+```
+
+**`useFlightStatus` contract:**
+
+```ts
+interface UseFlightStatusResult {
+  data: FlightStatusResult | null;
+  isLoading: boolean;
+  error: string | null;
+  search: (flightNumber: string, date: string) => Promise<void>;
+}
+```
+
+Three UI states map directly to this hook's fields: **empty** (`data === null && error === null`,
+before any search), **result** (`data !== null`, renders `ResultCard`), **error** (`error !==
+null`, renders `ErrorState`). `isLoading` gates the form's submit control and can show a loading
+indicator independent of the other three states.
+
+---
+
 ## Assumptions & Design Decisions
 
 These resolve ambiguities in the original brief; documented here so they're auditable rather than

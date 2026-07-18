@@ -118,3 +118,16 @@ params, malformed date).
 **Purpose**
 
 Used to generate the FlightStatus.Tests suite: AeroTrackProviderTests and QuickFlightProviderTests covering every vocabulary-table row and the 15-minute boundary, FlightStatusServiceTests covering all three merge rules plus the provider-throws case via a hand-rolled FakeFlightStatusProvider, and FlightStatusRequestValidatorTests covering missing/blank params and malformed dates; all 56 tests pass. Note: made Normalize/ComputeFromSchedule internal (with InternalsVisibleTo) and extracted endpoint validation into FlightStatusRequestValidator to make these testable without a WebApplicationFactory dependency, and changed FlightStatusService to catch a throwing provider and treat it as "no response" (merge rules 2/3) rather than letting the exception propagate to a 500 — this wasn't specified in spec.md, so I flagged it to the user as a behavior decision rather than silently encoding it as passing tests.
+
+# 10. Frontend Implementation
+
+**Prompt**
+
+Build the frontend per the UI requirements in spec.md and the brief — search form, color-coded
+status card, conditional AeroTrack-only fields, and a clear error state.
+
+---
+
+**Purpose**
+
+Used to build flight-status-ui per spec.md's Frontend Design & Structure section: Tailwind CSS v4 wired via @tailwindcss/vite, services/flightStatusApi.ts, hooks/useFlightStatus.ts, and components/ (SearchForm, ResultCard, ErrorState, StatusBadge), then verified live by driving a real headless Chrome instance via CDP against both running dev servers — confirmed all five status colors, conditional AeroTrack fields, no scrollbar at 1280×900, no horizontal overflow at 375px, and the error state after killing the API mid-session. Note: this also required resolving the previously-flagged UnifiedFlightStatus serialization decision (added JsonStringEnumConverter in Program.cs so status serializes as a name, not an ordinal) since StatusBadge's color map needed to key off status names — updated spec.md's note to mark that decision resolved rather than leaving it stale.

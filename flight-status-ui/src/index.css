@@ -1,12 +1,30 @@
+@import "tailwindcss";
+@import "react-day-picker/style.css";
+
 :root {
-  color-scheme: light dark;
-  font: 18px/145% system-ui, 'Segoe UI', Roboto, sans-serif;
+  /* This UI is light-only (see spec.md's Frontend Design & Structure section — no dark
+     variants are defined). Declaring "light dark" here made the browser render native
+     controls in dark mode while the rest of the page stayed light. */
+  color-scheme: light;
+  font: 16px/145% system-ui, 'Segoe UI', Roboto, sans-serif;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-body {
-  margin: 0;
+html,
+body,
+#root {
+  height: 100%;
+}
+
+/* Theme react-day-picker to match the app's slate palette instead of its default blue.
+   Must live here (plain CSS, imported after react-day-picker/style.css) rather than as a
+   Tailwind utility class: Tailwind wraps utilities in @layer, and un-layered CSS (like
+   react-day-picker's own stylesheet) always wins over layered CSS regardless of source order. */
+.rdp-root {
+  --rdp-accent-color: var(--color-slate-900);
+  --rdp-accent-background-color: var(--color-slate-100);
+  --rdp-today-color: var(--color-slate-900);
 }

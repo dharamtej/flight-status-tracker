@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using FlightStatus.Api.Endpoints;
 using FlightStatus.Api.Interfaces;
 using FlightStatus.Api.Providers;
@@ -7,6 +8,14 @@ using ProblemDetails = Microsoft.AspNetCore.Mvc.ProblemDetails;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddProblemDetails();
+
+// UnifiedFlightStatus serializes as its name (e.g. "OnTime"), not its numeric ordinal,
+// so the frontend's status → color map can key off the name directly (see spec.md's
+// Frontend Design & Structure section).
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
 
 builder.Services.AddScoped<IFlightStatusProvider, AeroTrackProvider>();
 builder.Services.AddScoped<IFlightStatusProvider, QuickFlightProvider>();
