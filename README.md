@@ -93,21 +93,30 @@ Open **http://localhost:5173**.
 
 The two providers are deterministic in-memory fixtures, not random data — most flight
 number/date combinations correctly return `Unknown` ("no status available"), which is expected
-behavior, not a bug. To see the other statuses, use one of the documented fixtures, all dated
-**15 Jan 2026**:
+behavior, not a bug. **Every fixture below is dated 15 Jan 2026** — any other date returns
+`Unknown` for any flight number, since no fixture exists for it.
 
-| Flight number | Expected result |
-|---|---|
-| `SR100` | On Time (AeroTrack) |
-| `SR200` | Delayed (AeroTrack) |
-| `SR300` | Cancelled (AeroTrack) |
-| `SR400` | Diverted (AeroTrack) |
-| `SR700` | On Time, with Terminal/Gate shown |
-| `SR900` | Delayed, with a delay reason shown |
-| `SR800` | Unknown (neither provider has data) |
+| Flight number | Date | Expected result |
+|---|---|---|
+| `SR100` | 15 Jan 2026 | 🟢 On Time (AeroTrack) |
+| `SR101` | 15 Jan 2026 | 🟢 On Time (QuickFlight) |
+| `SR200` | 15 Jan 2026 | 🟡 Delayed (AeroTrack) |
+| `SR201` | 15 Jan 2026 | 🟡 Delayed (QuickFlight) |
+| `SR300` | 15 Jan 2026 | 🔴 Cancelled (AeroTrack) |
+| `SR301` | 15 Jan 2026 | 🔴 Cancelled (QuickFlight) |
+| `SR400` | 15 Jan 2026 | 🔴 Diverted (AeroTrack) |
+| `SR401` | 15 Jan 2026 | 🔴 Diverted (QuickFlight) |
+| `SR500` | 15 Jan 2026 | ⚪ Unknown (both respond, unrecognized status) |
+| `SR600` | 15 Jan 2026 | 🟡 Delayed (both respond, QuickFlight fresher wins) |
+| `SR601` | 15 Jan 2026 | 🟡 Delayed (both respond, AeroTrack fresher wins) |
+| `SR602` | 15 Jan 2026 | 🟢 On Time (equal timestamp, AeroTrack tie-break) |
+| `SR700` | 15 Jan 2026 | 🟢 On Time, shows Terminal/Gate |
+| `SR800` | 15 Jan 2026 | ⚪ Unknown (neither provider responds) |
+| `SR900` | 15 Jan 2026 | 🟡 Delayed, shows Delay reason |
 
-The full 15-row scenario table (covering both providers, tie-breaks, and every status) is in
-spec.md's [Deterministic Test Scenarios](spec.md#deterministic-test-scenarios) section.
+This is the same table as spec.md's
+[Deterministic Test Scenarios](spec.md#deterministic-test-scenarios) section — see there for the
+full per-scenario provider behavior (raw status, timestamps) behind each row.
 
 ---
 

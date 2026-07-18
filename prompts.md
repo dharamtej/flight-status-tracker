@@ -144,3 +144,16 @@ frontend from a clean clone, the API contract, key assumptions, how to run tests
 **Purpose**
 
 Used to produce README.md: project summary, backend/frontend architecture overview cross-linked to spec.md, tech stack table, clean-clone setup/run steps for both apps, a table of known-good fixture flight numbers for manual testing, the API contract with a live example, a condensed summary of spec.md's key assumptions, and test-running instructions (dotnet test, a single-test filter example, and the frontend build/lint commands). Note: every command in the README (dotnet restore, dotnet run --project FlightStatus.Api --urls http://localhost:5299, npm install/npm run dev, the proxy, dotnet test --filter) was actually re-run from a cold-started state to confirm it works as written, not just transcribed from memory — the backend/frontend port-mismatch gotcha from earlier in this session is called out explicitly so it isn't rediscovered by a fresh clone.
+
+# 12. Reflection Authoring
+
+**Prompt**
+
+Write reflection.md — what I'd improve with more time, and a closing "Lessons Learned"
+section on where AI accelerated the work and where I had to override or correct its output.
+
+---
+
+**Purpose**
+
+Used to produce reflection.md: a "What I'd improve with more time" list (frontend test coverage, integration tests through the real pipeline, fixture coverage tied to a single hardcoded date, CI, configurable API base URL, an accessibility pass, provider resiliency) and a "Lessons Learned" section split between where AI accelerated the work (spec-first ambiguity resolution, test generation from a written contract, full-stack scaffolding, catching its own bugs when asked to verify) and where output had to be overridden or corrected (the DateTime.MinValue sentinel, the unilateral provider-throws design decision, the color-scheme default that broke the date picker, the CSS Cascade Layers bug, the port-mismatch gap, and path-escaping bugs in debug tooling). Note: every incident cited is one that actually occurred earlier in this session, not a generic/invented example.
