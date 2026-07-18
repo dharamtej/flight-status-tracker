@@ -91,3 +91,16 @@ missing/invalid query params.
 **Purpose**
 
 Used to generate FlightStatus.Api/Endpoints/FlightStatusEndpoints.cs (a MapGet extension method validating flightNumber/date presence and yyyy-MM-dd format, returning Results.Problem for 400s) and wire DI registration for both IFlightStatusProvider implementations and IFlightStatusService into Program.cs, then ran the API and curled every merge scenario plus all three 400 cases to confirm end-to-end behavior. Note: verified UnifiedFlightStatus serializes as a numeric enum by default rather than a string, and flagged it to the user as an open decision (add JsonStringEnumConverter now vs. handle it on the frontend) rather than deciding unilaterally.
+
+# 8. Global Exception Handling
+
+**Prompt**
+
+Add global exception handling so unhandled exceptions return a consistent JSON 500 instead
+of a stack trace.
+
+---
+
+**Purpose**
+
+Used to add app.UseExceptionHandler(...) in Program.cs, writing a consistent application/problem+json 500 body via IProblemDetailsService instead of a stack trace or dev exception page, then verified it live by temporarily throwing from the endpoint for a sentinel flight number and reverting afterward. Note: ProblemDetails for this purpose actually resolves from Microsoft.AspNetCore.Mvc rather than Microsoft.AspNetCore.Http as first assumed, despite IProblemDetailsService/ProblemDetailsContext living in Http — corrected via a using alias after a build error surfaced the right namespace.
